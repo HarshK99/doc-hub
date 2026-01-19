@@ -11,12 +11,12 @@ const rootDir = process.env.DOC_ROOT || path.join(__dirname, '..');
 // Serve static files from public/
 app.use(express.static('public'));
 
-// /api/projects: Scan root directory for folders containing doc/
+// /api/projects: Scan root directory for folders containing doc/ or docs/
 app.get('/api/projects', (req, res) => {
   try {
     const items = fs.readdirSync(rootDir, { withFileTypes: true });
     const projects = items
-      .filter(item => item.isDirectory() && fs.existsSync(path.join(rootDir, item.name, 'doc')))
+      .filter(item => item.isDirectory() && (fs.existsSync(path.join(rootDir, item.name, 'doc')) || fs.existsSync(path.join(rootDir, item.name, 'docs'))))
       .map(item => item.name);
     res.json(projects);
   } catch (err) {
@@ -25,7 +25,7 @@ app.get('/api/projects', (req, res) => {
   }
 });
 
-// /api/docs?project=name: List markdown files under project/doc/
+// /api/docs?project=name: List markdown files under project/doc/ or docs/
 app.get('/api/docs', (req, res) => {
   const project = req.query.project;
   if (!project) return res.status(400).json({ error: 'Project required' });
@@ -40,8 +40,12 @@ app.get('/api/docs', (req, res) => {
     return res.status(404).json({ error: 'Project not found' });
   }
 
-  const docPath = path.join(projectPath, 'doc');
-  if (!fs.existsSync(docPath)) {
+  let docPath;
+  if (fs.existsSync(path.join(projectPath, 'doc'))) {
+    docPath = path.join(projectPath, 'doc');
+  } else if (fs.existsSync(path.join(projectPath, 'docs'))) {
+    docPath = path.join(projectPath, 'docs');
+  } else {
     return res.status(404).json({ error: 'No docs folder' });
   }
 
@@ -102,8 +106,17 @@ app.get('/api/doc', (req, res) => {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
-  const fullPath = path.join(rootDir, project, 'doc', relPath);
-  const docDir = path.join(rootDir, project, 'doc');
+  const projectPath = path.join(rootDir, project);
+  let docDir;
+  if (fs.existsSync(path.join(projectPath, 'doc'))) {
+    docDir = path.join(projectPath, 'doc');
+  } else if (fs.existsSync(path.join(projectPath, 'docs'))) {
+    docDir = path.join(projectPath, 'docs');
+  } else {
+    return res.status(404).json({ error: 'No docs folder' });
+  }
+
+  const fullPath = path.join(docDir, relPath);
 
   // Ensure fullPath is under docDir (path traversal protection)
   const resolvedFull = path.resolve(fullPath);

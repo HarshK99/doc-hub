@@ -1,76 +1,210 @@
 body {
-  font-family: Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   line-height: 1.6;
   margin: 0;
-  padding: 20px;
-  background-color: #f4f4f4;
+  padding: 0;
+  background-color: #f8f9fa;
+  color: #212529;
+  scroll-behavior: smooth;
 }
 
-#app {
-  max-width: 1000px;
-  margin: 0 auto;
+#header {
   background: white;
-  padding: 20px;
-  border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+  padding: 10px 20px;
+  border-bottom: 1px solid #dee2e6;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
 h1 {
-  color: #333;
-  text-align: center;
-  margin-bottom: 20px;
+  margin: 0;
+  color: #495057;
+  font-size: 1.5em;
 }
 
 #projectSelect {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 20px;
-  border: 1px solid #ccc;
+  margin: 0;
+  width: auto;
+  max-width: 250px;
+  padding: 8px;
+  border: 1px solid #ced4da;
   border-radius: 4px;
-  font-size: 16px;
+  font-size: 14px;
+  background: white;
 }
 
 #docList {
   list-style: none;
   padding: 0;
-  margin-bottom: 20px;
+  margin: 10px 0 0 0;
+  width: 100%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
 }
 
 #docList li {
-  margin-bottom: 5px;
+  margin: 0;
 }
 
 #docList a {
-  display: block;
-  padding: 8px 12px;
+  display: inline-block;
+  padding: 6px 12px;
   text-decoration: none;
   color: #007bff;
-  border-radius: 4px;
-  transition: background-color 0.2s;
+  background: #e9ecef;
+  border-radius: 15px;
+  font-size: 14px;
+  transition: background-color 0.2s, color 0.2s;
 }
 
 #docList a:hover {
-  background-color: #e9ecef;
+  background-color: #007bff;
+  color: white;
 }
 
-#content {
-  border-top: 1px solid #dee2e6;
-  padding-top: 20px;
+#main {
+  display: flex;
+  height: calc(100vh - 100px); /* Adjusted for compact header */
 }
 
-#content h1, #content h2, #content h3 {
+#sidebar {
+  width: 250px;
+  background: white;
+  border-right: 1px solid #dee2e6;
+  padding: 20px;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+
+#sidebar h2 {
+  margin-top: 0;
+  font-size: 1.2em;
   color: #495057;
 }
 
+#nav {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#nav li {
+  margin-bottom: 5px;
+}
+
+#nav a {
+  display: block;
+  padding: 5px 0;
+  text-decoration: none;
+  color: #6c757d;
+  border-left: 3px solid transparent;
+  padding-left: 10px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+#nav a:hover {
+  color: #007bff;
+}
+
+#nav a.active {
+  color: #007bff;
+  border-left-color: #007bff;
+  font-weight: 500;
+}
+
+#nav ul {
+  list-style: none;
+  padding-left: 20px;
+  margin: 5px 0;
+}
+
+#nav ul a {
+  font-size: 0.9em;
+}
+
+#content {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+  background: white;
+}
+
+#content h1, #content h2, #content h3, #content h4, #content h5, #content h6 {
+  color: #495057;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  scroll-margin-top: 20px;
+}
+
+#content h1 { font-size: 2em; border-bottom: 1px solid #dee2e6; padding-bottom: 0.3em; }
+#content h2 { font-size: 1.5em; }
+#content h3 { font-size: 1.2em; }
+#content h4 { font-size: 1.1em; }
+
+#content p {
+  margin-bottom: 1em;
+}
+
+#content ul, #content ol {
+  margin-bottom: 1em;
+  padding-left: 2em;
+}
+
+#content li {
+  margin-bottom: 0.5em;
+}
+
 #content code {
-  background-color: #f8f9fa;
+  background-color: #f1f3f4;
   padding: 2px 4px;
   border-radius: 3px;
+  font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+  font-size: 0.9em;
 }
 
 #content pre {
   background-color: #f8f9fa;
-  padding: 10px;
+  border: 1px solid #dee2e6;
   border-radius: 4px;
+  padding: 15px;
   overflow-x: auto;
+  margin-bottom: 1em;
+}
+
+#content pre code {
+  background: none;
+  padding: 0;
+}
+
+#content blockquote {
+  border-left: 4px solid #007bff;
+  padding-left: 15px;
+  margin-left: 0;
+  color: #6c757d;
+  font-style: italic;
+}
+
+#content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1em;
+}
+
+#content th, #content td {
+  border: 1px solid #dee2e6;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+#content th {
+  background-color: #f8f9fa;
+  font-weight: 600;
+}
+
+#content tr:nth-child(even) {
+  background-color: #f8f9fa;
 }
