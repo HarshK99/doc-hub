@@ -1,0 +1,15 @@
+{
+  "name": "doc-hub",
+  "version": "1.0.0",
+  "description": "Minimal local documentation viewer for markdown files",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.18.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

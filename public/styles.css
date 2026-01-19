@@ -1,0 +1,76 @@
+body {
+  font-family: Arial, sans-serif;
+  line-height: 1.6;
+  margin: 0;
+  padding: 20px;
+  background-color: #f4f4f4;
+}
+
+#app {
+  max-width: 1000px;
+  margin: 0 auto;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
+}
+
+h1 {
+  color: #333;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+#projectSelect {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 20px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 16px;
+}
+
+#docList {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+#docList li {
+  margin-bottom: 5px;
+}
+
+#docList a {
+  display: block;
+  padding: 8px 12px;
+  text-decoration: none;
+  color: #007bff;
+  border-radius: 4px;
+  transition: background-color 0.2s;
+}
+
+#docList a:hover {
+  background-color: #e9ecef;
+}
+
+#content {
+  border-top: 1px solid #dee2e6;
+  padding-top: 20px;
+}
+
+#content h1, #content h2, #content h3 {
+  color: #495057;
+}
+
+#content code {
+  background-color: #f8f9fa;
+  padding: 2px 4px;
+  border-radius: 3px;
+}
+
+#content pre {
+  background-color: #f8f9fa;
+  padding: 10px;
+  border-radius: 4px;
+  overflow-x: auto;
+}
