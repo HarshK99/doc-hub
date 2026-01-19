@@ -1,11 +1,10 @@
-// Set up marked with custom renderer for heading IDs
-const renderer = new marked.Renderer();
-renderer.heading = function(text, level) {
-  text = String(text || '');
-  const id = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-+|-+$/g, '');
-  return `<h${level} id="${id}">${text}</h${level}>`;
-};
-marked.setOptions({ renderer });
+// Set up marked with default options
+marked.setOptions({});
+
+// Function to generate slug
+function slug(text) {
+  return text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-+|-+$/g, '');
+}
 
 // Load projects on page load
 async function loadProjects() {
@@ -61,6 +60,7 @@ async function loadDocs(project) {
 
 // Parse headings from markdown
 function parseHeadings(md) {
+  md = String(md).replace(/\[object Object\]/g, ''); // Ensure md is a string and remove artifacts
   const lines = md.split('\n');
   const headings = [];
   let currentH2 = null;
@@ -68,12 +68,12 @@ function parseHeadings(md) {
     const trimmed = line.trim();
     if (trimmed.startsWith('## ')) {
       const text = trimmed.substring(3).trim();
-      const id = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-+|-+$/g, '');
+      const id = slug(text);
       currentH2 = { text, id, children: [] };
       headings.push(currentH2);
     } else if (trimmed.startsWith('### ') && currentH2) {
       const text = trimmed.substring(4).trim();
-      const id = text.toLowerCase().replace(/[^\w]+/g, '-').replace(/^-+|-+$/g, '');
+      const id = slug(text);
       currentH2.children.push({ text, id });
     }
   }
@@ -85,7 +85,8 @@ async function loadDoc(project, path) {
   try {
     const res = await fetch(`/api/doc?project=${encodeURIComponent(project)}&path=${encodeURIComponent(path)}`);
     if (!res.ok) throw new Error('Failed to load doc');
-    const md = await res.text();
+    let md = await res.text();
+    md = String(md).replace(/\[object Object\]/g, ''); // Remove [object Object] artifacts
 
     // Parse headings and build navigation
     const headings = parseHeadings(md);
@@ -115,6 +116,15 @@ async function loadDoc(project, path) {
     // Render markdown
     const html = marked.parse(md);
     document.getElementById('content').innerHTML = html;
+
+    // Add IDs to headings after rendering
+    const contentDiv = document.getElementById('content');
+    const headingElements = contentDiv.querySelectorAll('h1, h2, h3, h4, h5, h6');
+    headingElements.forEach(h => {
+      const text = h.textContent;
+      const id = slug(text);
+      h.id = id;
+    });
 
     // Set up scroll tracking for active navigation
     setupScrollTracking();
