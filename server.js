@@ -11,13 +11,28 @@ const rootDir = process.env.DOC_ROOT || path.join(__dirname, '..');
 // Serve static files from public/
 app.use(express.static('public'));
 
-// /api/projects: Scan root directory for folders containing doc/ or docs/
+// /api/projects: Scan root directory recursively for folders containing doc/ or docs/
 app.get('/api/projects', (req, res) => {
   try {
-    const items = fs.readdirSync(rootDir, { withFileTypes: true });
-    const projects = items
-      .filter(item => item.isDirectory() && (fs.existsSync(path.join(rootDir, item.name, 'doc')) || fs.existsSync(path.join(rootDir, item.name, 'docs'))))
-      .map(item => item.name);
+    const projects = [];
+    function scanDir(dir, relPath = '') {
+      const items = fs.readdirSync(dir, { withFileTypes: true });
+      for (const item of items) {
+        if (item.isDirectory()) {
+          // Skip node_modules to avoid including package docs
+          if (item.name === 'node_modules') continue;
+          const fullPath = path.join(dir, item.name);
+          const currentRel = relPath ? path.join(relPath, item.name) : item.name;
+          if (fs.existsSync(path.join(fullPath, 'doc')) || fs.existsSync(path.join(fullPath, 'docs'))) {
+            projects.push(currentRel.replace(/\\/g, '/')); // normalize to /
+          } else {
+            // Continue scanning deeper
+            scanDir(fullPath, currentRel);
+          }
+        }
+      }
+    }
+    scanDir(rootDir);
     res.json(projects);
   } catch (err) {
     console.error('Error scanning projects:', err);
@@ -30,12 +45,14 @@ app.get('/api/docs', (req, res) => {
   const project = req.query.project;
   if (!project) return res.status(400).json({ error: 'Project required' });
 
-  // Validate project name: no path traversal characters
-  if (project.includes('..') || project.includes('/') || project.includes('\\')) {
+  // Validate project name: no path traversal
+  if (project.includes('..')) {
     return res.status(400).json({ error: 'Invalid project name' });
   }
 
-  const projectPath = path.join(rootDir, project);
+  // Build project path, normalizing separators
+  const projectParts = project.split(/[/\\]/).filter(p => p);
+  const projectPath = path.join(rootDir, ...projectParts);
   if (!fs.existsSync(projectPath) || !fs.statSync(projectPath).isDirectory()) {
     return res.status(404).json({ error: 'Project not found' });
   }
@@ -106,7 +123,9 @@ app.get('/api/doc', (req, res) => {
     return res.status(400).json({ error: 'Invalid input' });
   }
 
-  const projectPath = path.join(rootDir, project);
+  // Build project path
+  const projectParts = project.split(/[/\\]/).filter(p => p);
+  const projectPath = path.join(rootDir, ...projectParts);
   let docDir;
   if (fs.existsSync(path.join(projectPath, 'doc'))) {
     docDir = path.join(projectPath, 'doc');
